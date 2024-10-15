@@ -24,11 +24,14 @@ app.MapGet("/games/", (GameDb db) =>
 
 app.MapPost("/games/", async (GameDb db, [FromBody] int[]? boardState, [FromQuery] int? columns, [FromQuery] int? rows) =>
 {
+    var numColumns = columns ?? 10;
+    var numRows = rows ?? 10;
+
     var game = new Game
     {
-        Columns = columns ?? 10,
-        Rows = rows ?? 10,
-        BoardState = boardState ?? Enumerable.Range(0, 100).Select(i => Random.Shared.Next(2)).ToArray(),
+        Columns = numColumns,
+        Rows = numRows,
+        BoardState = boardState ?? Enumerable.Range(0, numColumns * numRows).Select(i => Random.Shared.Next(2)).ToArray(),
     };
     db.Add(game);
     await db.SaveChangesAsync();
