@@ -30,6 +30,7 @@ app.MapPost("/games/", async ([FromBody] int[]? boardState, [FromQuery] int? col
         Rows = numRows,
         BoardState = boardState ?? Enumerable.Range(0, numColumns * numRows).Select(i => Random.Shared.Next(2)).ToArray(),
     };
+    db.Database.EnsureCreated();
     db.Add(game);
     await db.SaveChangesAsync();
     return Results.Ok(game.Id);
