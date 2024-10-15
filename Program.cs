@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 const string dbPath = "conway.sqlite";
 var ids = new[] {"1", "2", "3", "4", "5"};
 var builder = WebApplication.CreateBuilder(args);
-//builder.Services.AddDbContext<Ga  meDb>(opt => opt.UseInMemoryDatabase("int"));
+//builder.Services.AddDbContext<GameDb>(opt => opt.UseInMemoryDatabase("int"));
 builder.Services.AddDbContext<GameDb>(opt => opt.UseSqlite($"Data Source={dbPath}"));
 builder.Services.AddSingleton(ids);
 var app = builder.Build();
@@ -26,7 +26,6 @@ app.MapPost("/games/", async (GameDb db, [FromBody] int[]? boardState, [FromQuer
 {
     var numColumns = columns ?? 10;
     var numRows = rows ?? 10;
-
     var game = new Game
     {
         Columns = numColumns,
@@ -63,11 +62,10 @@ app.MapPut("/games/{id}/step/{steps}", async (string id, int steps, GameDb db) =
         var game = await db.FindAsync<Game>(int.Parse(id));
         if (game == null)
             return Results.NotFound();
-        int[] lastState = game.BoardState;
         do
         {
             game.Advance();
-        } while (game.BoardState != lastState && steps-- > 0);
+        } while (game.BoardState.Sum() != 0 && steps-- > 1);
         db.Update(game);
         await db.SaveChangesAsync();
         return Results.Ok(game);
@@ -79,7 +77,7 @@ app.MapPut("/games/{id}/step/complete", async (string id, [FromQuery] int? maxGe
         var game = await db.FindAsync<Game>(int.Parse(id));
         if (game == null)
             return Results.NotFound();
-        var complete = AdvanceGame(game, maxGenerations ?? 10);
+        var complete = CompleteGame(game, maxGenerations ?? 10);
         db.Update(game);
         await db.SaveChangesAsync();
         if (!complete) return Results.NotFound();
@@ -91,10 +89,10 @@ app.Run();
 
 
 
-bool AdvanceGame(Game game, int steps)
+bool CompleteGame(Game game, int generations)
 {
     HashSet<int[]> boardStates = new HashSet<int[]>();
-    for (var i = 0; i < steps; i++)
+    for (var i = 0; i < generations; i++)
     {
         var newState = game.Advance();
         // if everybody is dead or we're repeating
@@ -124,7 +122,7 @@ internal class Game
                 {
                     (0, 3) => 1,
                     (1, < 2) => 0,
-                    (1, > 3) =>0,
+                    (1, > 3) => 0,
                     var (a, _) => a,
                 };
             }
