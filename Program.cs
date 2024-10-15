@@ -80,9 +80,9 @@ app.MapPut("/games/{id}/step/complete", async (string id, [FromQuery] int? maxGe
         if (game == null)
             return Results.NotFound();
         var complete = AdvanceGame(game, maxGenerations ?? 10);
-        if (!complete) return Results.NotFound();
         db.Update(game);
         await db.SaveChangesAsync();
+        if (!complete) return Results.NotFound();
         return Results.Ok(game);
     }
 );
