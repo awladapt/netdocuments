@@ -71,12 +71,12 @@ app.MapPut("/games/{id}/step/{steps}", async (string id, int steps, GameDb db) =
     }
 );
 
-app.MapPut("/games/{id}/step/complete", async (string id, [FromQuery] int maxGenerations, GameDb db) =>
+app.MapPut("/games/{id}/step/complete", async (string id, [FromQuery] int? maxGenerations, GameDb db) =>
     {
         var game = await db.FindAsync<Game>(int.Parse(id));
         if (game == null)
             return Results.NotFound();
-        var complete = AdvanceGame(game, maxGenerations);
+        var complete = AdvanceGame(game, maxGenerations ?? 10);
         if (!complete) return Results.NotFound();
         db.Update(game);
         await db.SaveChangesAsync();
