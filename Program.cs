@@ -107,7 +107,6 @@ internal class Game
     public int Rows { get; set; } = 10;
     public int Generation { get; set; } = 1;
     public int[] BoardState { get; set; } = [];
-    private int Idx(int row, int col) => ((row + Rows) % Rows) * Columns + ((col + Columns) % Columns);
     public int[] Advance()
     {
         var newState = (int[])BoardState.Clone();
@@ -130,6 +129,7 @@ internal class Game
         return BoardState;
     }
 
+    private int Idx(int row, int col) => ((row + Rows) % Rows) * Columns + ((col + Columns) % Columns);
     private int CountNeighbors(int col, int row)
     {
         var sum = 0;
