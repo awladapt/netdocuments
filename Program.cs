@@ -20,7 +20,7 @@ app.MapGet("/games/", (GameDb db) =>
     };
 });
 
-app.MapPost("/games/", async (GameDb db, [FromBody] int[]? boardState, [FromQuery] int? columns, [FromQuery] int? rows) =>
+app.MapPost("/games/", async ([FromBody] int[]? boardState, [FromQuery] int? columns, [FromQuery] int? rows, GameDb db) =>
 {
     var numColumns = columns ?? 10;
     var numRows = rows ?? 10;
