@@ -3,11 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
 const string dbPath = "conway.sqlite";
-var ids = new[] {"1", "2", "3", "4", "5"};
 var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddDbContext<GameDb>(opt => opt.UseInMemoryDatabase("int"));
 builder.Services.AddDbContext<GameDb>(opt => opt.UseSqlite($"Data Source={dbPath}"));
-builder.Services.AddSingleton(ids);
 var app = builder.Build();
 
 app.MapGet("/", () => "netdocuments exercise");
